@@ -1,0 +1,22 @@
+name: Deploy a Ubuntu Server
+
+on:
+  push:
+    branches: [ main ] # o el nombre que tenga la rama
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Actualizar la página
+          run: |
+            echo "$SSH_PRIVATE_KEY" > deploy_key.pem 
+            chmod 600 deploy_key.pem
+            ssh -i deploy_key.pem ubuntu@51.20.114.159 'cd /var/www/pagina && git pull origin main'
+            rm deploy_key.pem
+          env: 
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
